@@ -2,7 +2,6 @@
 # encoding: UTF-8
 
 require 'rubydns'
-require 'rubydns/system'
 require 'trollop'
 require 'eventmachine'
 
@@ -18,17 +17,25 @@ Usage:
 
 where [options] are:
 EOS
-	opt :upstream, "Use an upstream server to serve non-WINS requests. Using “system” will use the system’s default DNS servers.", default: 'system', short: 'u'
+	opt :upstream, "Use an upstream server to serve non-WINS requests. Using “system” will use the system’s default DNS servers.", default: ['system'], short: 'u'
 	opt :"no-upstream", "Don’t use an upstream server. Non-WINS requests will not be answered.", short: 'n', default: false
 	opt :tlds, "The TLD(s) to listen for.", short: 't', default: ['wins', 'windows-computer', 'local']
-	opt :"all", "Try to answer all requests for a valid WINS name, without having to use a tld.", short: 'a', default: false
+	opt :"all", "Try to answer all requests for a valid WINS name, without having to use a TLD.", short: 'a', default: false
 	opt :"dot", "Allow WINS names to contain dots (before the TLD). Enabling this costs performance, especially when used with --all.", short: 'd', default: false
 end
 
 # Use upstream DNS for name resolution.
 upstream = nil
 unless opts[:"no-upstream"]
-	resolvers = opts[:upstream] === 'system' ? RubyDNS::System::nameservers : [[:udp, opts[:upstream], 53], [:tcp, opts[:upstream], 53]]
+	resolvers = []
+	opts[:upstream].each do |resolver|
+		if resolver === 'system' then
+			require 'rubydns/system'
+			resolvers = resolvers.concat(RubyDNS::System::nameservers)
+		else
+			resolvers.push([:udp, resolver, 53], [:tcp, resolver, 53])
+		end
+	end
 	upstream = RubyDNS::Resolver.new(resolvers)
 end
 UPSTREAM = upstream
