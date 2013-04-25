@@ -8,9 +8,12 @@ GEM
     rubydns (0.6.1)
       eventmachine (~> 1.0.0)
       rexec (~> 1.5.1)
+    trollop (2.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  eventmachine
   rubydns
+  trollop
