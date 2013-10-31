@@ -8,7 +8,7 @@ require 'eventmachine'
 module MyNameIsYourName
 
 opts = Trollop::options do
-	version "My Name Is Your Name 1.0. © 2012 Raphael Schweikert"
+	version "My Name Is Your Name 1.0. © 2013 Vertec AG"
   banner <<-EOS
 My Name Is Your Name: DNS Server that tries to resolve WINS names.
 
